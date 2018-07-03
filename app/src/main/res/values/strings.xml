@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Android</string>
+    <string name="ble_not_supported">Thiết bị không hỗ trợ BLE</string>
+</resources>
