@@ -76,6 +76,7 @@ public class BLE extends AppCompatActivity {
                 public void run() {
                     mScanning = false;
                     mBluetoothLeScanner.stopScan(mScanCallback); //đừng toàn bộ BLE
+                    a.setAdapter(adapter);
                 }
             }, 5000);
             mScanning = true;
@@ -125,8 +126,11 @@ public class BLE extends AppCompatActivity {
 
     private void update() {
         scanLeDevice(true); ///Scan khi nhấn Scan và hàm stop Scan sẽ được thực hiện sau khi chọn BLE
-        if(mScanning)
-        a.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        BluetoothAdapter.getDefaultAdapter().disable();
     }
 }
-///////////////////////////////////////////////////////Chưa tắt ScanBLE
