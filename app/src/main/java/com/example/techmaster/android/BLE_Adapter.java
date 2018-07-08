@@ -1,6 +1,5 @@
 package com.example.techmaster.android;
 
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +17,13 @@ public class BLE_Adapter  extends BaseAdapter{
     private Context context;
     private List<BluetoothDevice> DeviceLIST;
     private int layout;
+
+    ///class holder
+    private class ViewHolder{
+        TextView Name;
+        TextView Address;
+        TextView UUID;
+    }
 
     public int getLayout() {
         return layout;
@@ -64,22 +71,30 @@ public class BLE_Adapter  extends BaseAdapter{
         return 0;
     }
 
-    @SuppressLint("ViewHolder")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        assert inflater != null;
-        convertView = inflater.inflate(layout, null);
+        ViewHolder holder;
+        if(convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            assert inflater != null;
+            convertView = inflater.inflate(layout, null);
+            holder = new ViewHolder();
 
-        TextView Name = convertView.findViewById(R.id.NameBLE);
-        TextView Address = convertView.findViewById(R.id.AddressBLE);
-        TextView UUID = convertView.findViewById(R.id.UUID);
+            holder.Name= convertView.findViewById(R.id.NameBLE);
+            holder.Address = convertView.findViewById(R.id.AddressBLE);
+            holder.UUID = convertView.findViewById(R.id.UUID);
+            convertView.setTag(holder);
+        }
+        else
+        {
+            holder = (ViewHolder) convertView.getTag();
+        }
 
         BluetoothDevice device = DeviceLIST.get(position);
 
-        Name.setText(device.getName());
-        Address.setText(device.getAddress());
-        UUID.setText(Arrays.toString(device.getUuids()));
+        holder.Name.setText(device.getName());
+        holder.Address.setText(device.getAddress());
+        holder.UUID.setText(Arrays.toString(device.getUuids()));
 
         return convertView;
     }

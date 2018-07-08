@@ -2,6 +2,7 @@ package com.example.techmaster.android;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ import java.util.List;
 
 public class BLE extends AppCompatActivity {
 
+    private BluetoothGatt bluetoothGatt;
     //init BLE
     private BluetoothAdapter mBluetoothAdapter;
     final int REQUEST_ENABLE_BT = 1;
@@ -51,18 +54,20 @@ public class BLE extends AppCompatActivity {
             mBluetoothLeScanner.stopScan(mScanCallback);
         }
     }
-    private ScanCallback mScanCallback = new ScanCallback() {
+
+    ///call back
+    private final ScanCallback mScanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            if(!LISTBLUETOOTH.contains(result.getDevice()))
-            {
+            if (!LISTBLUETOOTH.contains(result.getDevice())) {
                 LISTBLUETOOTH.add(result.getDevice());
-                Log.i("Success","Success");
+                Log.i("Success", "Success");
             }
-            Log.e("Success",result.getDevice().getAddress());
+            Log.e("Success", result.getDevice().getAddress());
         }
 
         @Override
+
         public void onBatchScanResults(List<ScanResult> results) {
             for (ScanResult sr : results) {
 
