@@ -23,6 +23,7 @@ public class BLE_Adapter  extends BaseAdapter{
         TextView Name;
         TextView Address;
         TextView UUID;
+        BluetoothDevice device;
     }
 
     public int getLayout() {

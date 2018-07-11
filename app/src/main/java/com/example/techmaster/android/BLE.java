@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class BLE extends AppCompatActivity {
 
-    private BluetoothGatt bluetoothGatt;
+    public static final String BLUETOOTH_DEVICE = "BLUETOOTH_DEVICE";
     //init BLE
     private BluetoothAdapter mBluetoothAdapter;
     final int REQUEST_ENABLE_BT = 1;
@@ -79,8 +80,13 @@ public class BLE extends AppCompatActivity {
         public void onScanFailed(int errorCode) {
 
             Log.e("Scan Failed", "Error Code: " + errorCode);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    BluetoothAdapter.getDefaultAdapter().enable();
+                }
+            },500);
             BluetoothAdapter.getDefaultAdapter().disable();
-            BluetoothAdapter.getDefaultAdapter().enable();
         }
     };
 
@@ -126,6 +132,17 @@ public class BLE extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 update();
+            }
+        });
+
+        a.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                BluetoothDevice device = LISTBLUETOOTH.get(i);
+                Log.e("success",LISTBLUETOOTH.get(i).getName());
+                Intent newActivity = new Intent(BLE.this, ConnectBLE.class);
+                newActivity.putExtra(BLUETOOTH_DEVICE, device);
+                startActivity(newActivity);
             }
         });
     }
