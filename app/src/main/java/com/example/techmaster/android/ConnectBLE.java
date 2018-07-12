@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,9 @@ public class ConnectBLE extends AppCompatActivity{
     BluetoothGattCharacteristic bluetoothGattCharacteristic;
     BluetoothGattService bluetoothGattService;
     BluetoothDevice bluetoothDevice;
+    Button b;
+    TextView a;
+    String nha;
 
     private final BluetoothGattCallback mGattCallback =
             new BluetoothGattCallback() {
@@ -47,9 +51,9 @@ public class ConnectBLE extends AppCompatActivity{
 
                     bluetoothGattService = gatt.getService(UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb"));
                     bluetoothGattCharacteristic = bluetoothGattService.getCharacteristic(UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb"));
+                    bluetoothGatt.setCharacteristicNotification(bluetoothGattCharacteristic, true);
 
-                    //TEST FIND BLUETOOTH
-
+                    //TEST FIND BLUETOOTH UUID service/characterics
                     /* testService = gatt.getServices();
                     for(BluetoothGattService gatte : testService){
                         testCharacteristic = gatte.getCharacteristics();
@@ -75,7 +79,30 @@ public class ConnectBLE extends AppCompatActivity{
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                     super.onCharacteristicChanged(gatt, characteristic);
-                    Log.i("result", "Characteristic");
+                    Log.i("result", "Change Characteristic: "+characteristic.getUuid());
+                    Log.i("result kq ", characteristic.getStringValue(0).toString());
+                    final BluetoothGattCharacteristic b = characteristic;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            a.setText(b.getStringValue(0));
+                        }
+                    });
+
+
+                    ///TEST RECEIVE
+                   /* testService = gatt.getServices();
+                    for(BluetoothGattService gatte : testService){
+                        testCharacteristic = gatte.getCharacteristics();
+                        for(BluetoothGattCharacteristic a : testCharacteristic)
+                        {
+                            if(a.getStringValue(0) != null) {
+                                Log.i("result", a.getStringValue(0));
+                                Log.i("characterics: ", a.getUuid().toString());
+                                Log.i("service: ",gatte.getUuid().toString());
+                            }
+                        }
+                    }*/
                 }
 
                 @Override
@@ -94,11 +121,13 @@ public class ConnectBLE extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.controlble);
-        Button b = findViewById(R.id.btn);
+        b = findViewById(R.id.btn);
+        a = findViewById(R.id.tv1);
 
         bluetoothDevice = getIntent().getExtras().getParcelable("BLUETOOTH_DEVICE");
         Log.e("Success Pass", bluetoothDevice.getName());
         bluetoothGatt = bluetoothDevice.connectGatt(this,false,mGattCallback);
+
 
         b.setOnClickListener(new View.OnClickListener() {
             @Override
