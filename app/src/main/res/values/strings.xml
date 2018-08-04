@@ -2,4 +2,7 @@
     <string name="app_name">Android</string>
     <string name="ble_not_supported">Thiết bị không hỗ trợ BLE</string>
     <string name="SCAN">SCAN</string>
+    <string name="drift_right">Drift Right</string>
+    <string name="drift_left">Drift Left</string>
+    <string name="buzz">Buzz</string>
 </resources>

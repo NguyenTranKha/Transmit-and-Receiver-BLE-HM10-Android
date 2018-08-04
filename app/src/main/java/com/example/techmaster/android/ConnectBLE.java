@@ -1,5 +1,6 @@
 package com.example.techmaster.android;
 
+import android.app.ActionBar;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -7,14 +8,21 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class ConnectBLE extends AppCompatActivity{
@@ -25,9 +33,12 @@ public class ConnectBLE extends AppCompatActivity{
     BluetoothGattCharacteristic bluetoothGattCharacteristic;
     BluetoothGattService bluetoothGattService;
     BluetoothDevice bluetoothDevice;
-    Button b;
-    TextView a;
-    String nha;
+    SeekBar Servo;
+    SeekBar DongCo;
+    int GiaTriServo;
+    int GiaTriDongCo;
+    Button Buzz;
+    Handler handler;
 
     private final BluetoothGattCallback mGattCallback =
             new BluetoothGattCallback() {
@@ -85,7 +96,7 @@ public class ConnectBLE extends AppCompatActivity{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            a.setText(b.getStringValue(0));
+
                         }
                     });
 
@@ -119,26 +130,71 @@ public class ConnectBLE extends AppCompatActivity{
             };
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.controlble);
-        b = findViewById(R.id.btn);
-        a = findViewById(R.id.tv1);
 
+        super.onCreate(savedInstanceState);
+        ///////hide status bar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        /*requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();*/
+        setContentView(R.layout.controlble);
+        Servo = findViewById(R.id.servo);
+        DongCo = findViewById(R.id.motor);
+        Buzz = findViewById(R.id.Buzz);
         bluetoothDevice = getIntent().getExtras().getParcelable("BLUETOOTH_DEVICE");
         Log.e("Success Pass", bluetoothDevice.getName());
         bluetoothGatt = bluetoothDevice.connectGatt(this,false,mGattCallback);
-
-
-        b.setOnClickListener(new View.OnClickListener() {
+        Buzz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                downdate();
+                bluetoothGattCharacteristic.setValue(new byte[] {(byte)GiaTriDongCo, (byte)GiaTriServo, 'A' ,'\n'});
+                bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristic);
             }
         });
+        Servo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                GiaTriServo = progress + 20;
+                Log.d("result", "Servo: " + progress);
+                bluetoothGattCharacteristic.setValue(new byte[] {(byte)GiaTriDongCo, (byte)GiaTriServo, '\n'});
+                bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristic);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Servo.setProgress(10);
+            }
+        });
+
+        DongCo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                GiaTriDongCo = progress + 20;
+                Log.d("result", "Dong Co: " + progress);
+                bluetoothGattCharacteristic.setValue(new byte[] {(byte)GiaTriDongCo, (byte)GiaTriServo, '\n'});
+                bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristic);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                DongCo.setProgress(10);
+            }
+        });
+
     }
 
     void downdate(){
-        bluetoothGattCharacteristic.setValue("NguyenTranKha");
+        bluetoothGattCharacteristic.setValue("NguyenTranKha\n");
         bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristic);
     }
 
